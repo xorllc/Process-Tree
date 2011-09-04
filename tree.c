@@ -5,7 +5,7 @@ typedef struct _node node;
 struct _node {
   int pid;
   int ppid;
-}
+};
 
 static int size;
 
