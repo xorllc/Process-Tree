@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef struct _node node;
 struct _node {
@@ -17,6 +18,7 @@ void findSize() {
 
   char line[130];
 
+  fgets(line, sizeof line, file);
   while(fgets(line, sizeof line, file)) {
     size += 1;
   }
@@ -32,13 +34,23 @@ void parse(node *values[]) {
 
   int index = 0;
 
+  fgets(line, sizeof line, file);
   while(fgets(line, sizeof line, file)) {
+    node *temp = malloc(sizeof(node));
+
     strtok(line, " ");
     strtok(NULL, " ");
     strtok(NULL, " ");
 
-    node *temp = malloc(sizeof(node));
-    temp->pid = atoi(strtok(NULL, " "));
+    char *pid = NULL;
+    pid = strtok(NULL, " ");
+    if(strncmp((pid + 0), "(", 1) == 0) {
+      temp->pid = atoi((pid + 2));
+      temp->pid = temp->pid * -1;
+    } else {
+      temp->pid = atoi(pid);
+    }
+
     temp->ppid = atoi(strtok(NULL, " "));
 
     values[index] = temp;
@@ -50,7 +62,7 @@ void parse(node *values[]) {
 
 void printRoot(node *values[]) {
   for(int i = 0; i < size; i++) {
-    if(values[i]->pid == 0) {
+    if(values[i]->ppid == 0) {
       printf("%i %i\n", values[i]->pid, values[i]->ppid);
     }
   }
@@ -59,7 +71,7 @@ void printRoot(node *values[]) {
 void printTree(node *values[], int currentPid, int depth) {
   for(int i = 0; i < size; i++) {
     if(values[i]->ppid == currentPid) {
-      printf("%*s", depth, "-");
+      printf("%*s", depth, " ");
       printf("%i %i\n", values[i]->pid, values[i]->ppid);
 
       int newDepth = depth + 1;
